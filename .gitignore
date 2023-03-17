@@ -1,0 +1,9 @@
+# Virtual Environment stuff
+.venv/
+venv/
+
+# Scratch directory - temp results
+scratch/
+
+# Random stuff
+.DS_Store

@@ -1,3 +1,5 @@
+matplotlib==3.7.1
 networkx==3.0
 pandas==1.5.3
 py7zr==0.20.4
+scipy==1.10.1

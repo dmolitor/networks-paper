@@ -12,6 +12,16 @@ counties <- tigris::counties(
 ) |>
   dplyr::mutate(FIPS = paste0(STATEFP, COUNTYFP))
 
+# Import U.S. states data
+states <- tigris::states(TRUE, "20m", year = 2015) |>
+  sf::st_drop_geometry() |>
+  dplyr::select(STATEFP, NAME) |>
+  dplyr::rename("state" = "NAME")
+
+# Merge state names to county data
+counties <- dplyr::left_join(counties, states, by = "STATEFP") |>
+  dplyr::rename("county" = "NAME")
+
 # Pull in urban areas
 urban_des <- janitor::clean_names(
   readxl::read_excel(here::here("scratch/rural_urban.xlsx"))
@@ -140,6 +150,10 @@ migration <- migration |>
     by = c("o_fips" = "FIPS")
   )
 
+# Output data
+migration_out <- sf::st_drop_geometry(migration) |> dplyr::select(-geometry)
+readr::write_csv(migration_out, here::here("data/migration.csv"))
+
 # Plotting ----------------------------------------------------------------
 
 # Plot counties by urban category
@@ -156,6 +170,4 @@ tigris::shift_geometry(counties) |>
     plot.title = element_text(hjust = 0.5)
   )
 
-ggplot(data = urban_areas) +
-  geom_sf(color = "red") +
-  geom_sf(data = counties, color = "blue", inherit.aes = FALSE)
+
